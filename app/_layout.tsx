@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   DarkTheme,
   DefaultTheme,
@@ -16,6 +17,28 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  useEffect(() => {
+    const initAds = async () => {
+      try {
+        const Constants = (await import("expo-constants")).default;
+        const { ExecutionEnvironment } = await import("expo-constants");
+        const isExpoGo =
+          Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+        if (!isExpoGo) {
+          const mobileAds = require("react-native-google-mobile-ads").default;
+          if (mobileAds) {
+            await mobileAds().initialize();
+            console.log("Google Mobile Ads initialized successfully.");
+          }
+        }
+      } catch (error) {
+        console.warn("Failed to initialize Google Mobile Ads:", error);
+      }
+    };
+    initAds();
+  }, []);
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>

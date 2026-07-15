@@ -19,6 +19,7 @@ import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useMeals } from "@/contexts/MealsContext";
+import { AdBanner } from "@/components/ad-banner";
 
 const Colors = {
   light: {
@@ -84,7 +85,7 @@ export default function HomeScreen() {
         <ThemedText
           style={[styles.sectionTitle, { color: theme.textSecondary }]}
         >
-          Today's Meals
+          {"Today's Meals"}
         </ThemedText>
 
         <View style={styles.boxesContainer}>
@@ -115,6 +116,8 @@ export default function HomeScreen() {
             )}
           </View>
         </View>
+
+        <AdBanner />
 
         <View style={styles.buttonContainer}>
           <Pressable

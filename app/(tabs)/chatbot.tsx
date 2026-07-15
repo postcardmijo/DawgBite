@@ -7,18 +7,17 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-  ScrollView,
+  FlatList,
   StyleSheet,
   TextInput,
   View,
   useColorScheme,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { useMeals } from "@/contexts/MealsContext";
-import { getFoodItems } from "../modal"; // <-- Adjusted import path
+import { getFoodItems } from "../modal";
 
 interface Message {
   id: string;
@@ -85,6 +84,7 @@ export default function ChatbotScreen() {
 
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
+  const insets = useSafeAreaInsets();
 
   const mealsContextText = useMemo(() => {
     if (!meals.length) return "No logged meals yet.";
@@ -184,7 +184,6 @@ export default function ChatbotScreen() {
     setIsLoading(true);
 
     try {
-      // Create a chat with context
       const chat = model.startChat({
         history: [
           {
@@ -229,70 +228,71 @@ export default function ChatbotScreen() {
     }
   };
 
-  // ---------------- UI ----------------
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#E8F5E9", dark: "#121212" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/images.jpg")}
-          style={styles.headerImage}
-          contentFit="cover"
-        />
-      }
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+      style={[styles.container, { backgroundColor: theme.background, paddingTop: insets.top }]}
     >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">AI Nutrition Assistant</ThemedText>
-      </ThemedView>
-
-      <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-        Powered by Google Gemini
-      </ThemedText>
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.container}
-      >
-        <ScrollView style={styles.messagesContainer}>
-          {messages.map((message) => (
-            <View
-              key={message.id}
+      <FlatList
+        data={messages}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View
+            style={[
+              styles.messageBubble,
+              item.isUser
+                ? [styles.userMessage, { backgroundColor: theme.userMessage }]
+                : [styles.botMessage, { backgroundColor: theme.botMessage }],
+            ]}
+          >
+            <ThemedText
               style={[
-                styles.messageBubble,
-                message.isUser
-                  ? [styles.userMessage, { backgroundColor: theme.userMessage }]
-                  : [styles.botMessage, { backgroundColor: theme.botMessage }],
+                styles.messageText,
+                item.isUser && { color: "#ffffff" },
               ]}
             >
-              <ThemedText
-                style={[
-                  styles.messageText,
-                  message.isUser && { color: "#ffffff" },
-                ]}
-              >
-                {message.text}
-              </ThemedText>
+              {item.text}
+            </ThemedText>
 
-              <ThemedText
-                style={[
-                  styles.timestamp,
-                  message.isUser && { color: "#ffffff", opacity: 0.7 },
-                ]}
-              >
-                {message.timestamp.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+            <ThemedText
+              style={[
+                styles.timestamp,
+                item.isUser && { color: "#ffffff", opacity: 0.7 },
+              ]}
+            >
+              {item.timestamp.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </ThemedText>
+          </View>
+        )}
+        ListHeaderComponent={
+          <View style={styles.headerContainer}>
+            <View style={styles.imageWrapper}>
+              <Image
+                source={require("@/assets/images/images.jpg")}
+                style={styles.headerImage}
+                contentFit="cover"
+              />
+              <View style={styles.imageOverlay} />
+            </View>
+            <View style={styles.headerTextContainer}>
+              <ThemedText type="title" style={styles.mainTitle}>AI Nutrition Assistant</ThemedText>
+              <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
+                Powered by Google Gemini
               </ThemedText>
             </View>
-          ))}
-
-          {isLoading && (
+          </View>
+        }
+        ListFooterComponent={
+          isLoading ? (
             <View
               style={[
                 styles.messageBubble,
                 styles.botMessage,
-                { backgroundColor: theme.botMessage },
+                { backgroundColor: theme.botMessage, marginBottom: 20 },
               ]}
             >
               <ActivityIndicator size="small" color={theme.primary} />
@@ -302,78 +302,99 @@ export default function ChatbotScreen() {
                 Thinking...
               </ThemedText>
             </View>
-          )}
-        </ScrollView>
+          ) : (
+            <View style={{ height: 20 }} />
+          )
+        }
+        contentContainerStyle={styles.flatListContent}
+      />
 
-        {/* INPUT BAR */}
-        <View
+      {/* INPUT BAR */}
+      <View
+        style={[
+          styles.inputContainer,
+          {
+            backgroundColor: theme.inputBg,
+            borderColor: theme.border,
+            marginBottom: Math.max(insets.bottom, 12),
+          },
+        ]}
+      >
+        <TextInput
           style={[
-            styles.inputContainer,
-            { backgroundColor: theme.inputBg, borderColor: theme.border },
+            styles.input,
+            { color: colorScheme === "dark" ? "#ffffff" : "#000000" },
           ]}
-        >
-          <TextInput
-            style={[
-              styles.input,
-              { color: colorScheme === "dark" ? "#ffffff" : "#000000" },
-            ]}
-            value={inputText}
-            onChangeText={setInputText}
-            placeholder="Ask about today's meals..."
-            placeholderTextColor={theme.textSecondary}
-            multiline
-            maxLength={500}
-            onSubmitEditing={handleSend}
-            editable={!isLoading}
-          />
+          value={inputText}
+          onChangeText={setInputText}
+          placeholder="Ask about today's meals..."
+          placeholderTextColor={theme.textSecondary}
+          multiline
+          maxLength={500}
+          onSubmitEditing={handleSend}
+          editable={!isLoading}
+        />
 
-          <Pressable
-            style={[
-              styles.sendButton,
-              { backgroundColor: theme.primary, opacity: isLoading ? 0.5 : 1 },
-            ]}
-            onPress={handleSend}
-            disabled={isLoading}
-          >
-            <Ionicons name="send" size={20} color="#ffffff" />
-          </Pressable>
-        </View>
-      </KeyboardAvoidingView>
-    </ParallaxScrollView>
+        <Pressable
+          style={[
+            styles.sendButton,
+            { backgroundColor: theme.primary, opacity: inputText.trim() && !isLoading ? 1 : 0.5 },
+          ]}
+          onPress={handleSend}
+          disabled={!inputText.trim() || isLoading}
+        >
+          <Ionicons name="send" size={20} color="#ffffff" />
+        </Pressable>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 
 // ---------------- STYLES ----------------
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerContainer: {
+    width: "100%",
+    marginBottom: 16,
+  },
+  imageWrapper: {
+    height: 180,
+    width: "100%",
+    position: "relative",
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    overflow: "hidden",
+  },
   headerImage: {
     width: "100%",
     height: "100%",
-    position: "absolute",
-    opacity: 0.5,
   },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 8,
+  imageOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.25)",
+  },
+  headerTextContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  mainTitle: {
+    fontSize: 26,
+    fontWeight: "bold",
   },
   subtitle: {
-    marginBottom: 20,
-    opacity: 0.7,
+    fontSize: 14,
+    marginTop: 4,
   },
-  container: {
-    flex: 1,
-    minHeight: 400,
-  },
-  messagesContainer: {
-    flex: 1,
-    gap: 12,
-    paddingBottom: 16,
+  flatListContent: {
+    paddingBottom: 8,
   },
   messageBubble: {
     padding: 12,
     borderRadius: 16,
     maxWidth: "80%",
-    marginVertical: 6,
+    marginVertical: 4,
   },
   userMessage: {
     alignSelf: "flex-end",
@@ -400,7 +421,8 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 24,
     borderWidth: 1,
-    marginTop: 16,
+    marginHorizontal: 12,
+    marginTop: 8,
     gap: 8,
   },
   input: {

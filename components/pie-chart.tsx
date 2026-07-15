@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/themed-text";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, useColorScheme } from "react-native";
 import Svg, { Circle, Path, Text as SvgText } from "react-native-svg";
 
 interface PieChartProps {
@@ -16,6 +16,10 @@ export const SimplePieChart: React.FC<PieChartProps> = ({
   carbs,
   size = 200,
 }) => {
+  const colorScheme = useColorScheme() ?? "light";
+  const isDark = colorScheme === "dark";
+  const centerCircleBg = isDark ? "#151718" : "#ffffff";
+  const textColor = isDark ? "#ECEDEE" : "#11181C";
   const total = fat + protein + carbs;
   const radius = size / 2 - 10;
   const centerX = size / 2;
@@ -109,7 +113,7 @@ export const SimplePieChart: React.FC<PieChartProps> = ({
         />
 
         {/* Center circle for donut effect */}
-        <Circle cx={centerX} cy={centerY} r={radius * 0.5} fill="#F5F5F5" />
+        <Circle cx={centerX} cy={centerY} r={radius * 0.5} fill={centerCircleBg} />
 
         {/* Center text */}
         <SvgText
@@ -119,7 +123,7 @@ export const SimplePieChart: React.FC<PieChartProps> = ({
           dy="0.3em"
           fontSize="16"
           fontWeight="bold"
-          fill="#333"
+          fill={textColor}
         >
           {total}g
         </SvgText>

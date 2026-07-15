@@ -70,6 +70,7 @@ function KitchenInterface({ hallId = 'snelling_dining' }) {
             <option value="village_summit">Village Summit</option>
             <option value="oglethorpe_dining">Oglethorpe Dining Commons</option>
             <option value="niche_dining">The Niche</option>
+            <option value="west_campus_dining">West Campus Dining Commons</option>
           </select>
         </div>
       </div>

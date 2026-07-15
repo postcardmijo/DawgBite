@@ -70,6 +70,7 @@ const DB_HALL_MAPPING: Record<string, string> = {
   "dining-hall-3": "snelling_dining",
   "dining-hall-4": "niche_dining",
   "dining-hall-5": "village_summit",
+  "dining-hall-6": "west_campus_dining",
 };
 
 // ... [Your existing getFoodItems function remains unchanged] ...
@@ -83,6 +84,7 @@ export async function getFoodItems(): Promise<any> {
     "dining-hall-3": "Snelling Dining Commons",
     "dining-hall-4": "The Niche (Health Sciences Campus)",
     "dining-hall-5": "The Village Summit (Joe Frank Harris)",
+    "dining-hall-6": "West Campus Dining Commons",
   };
 
   const DINING_HALLS = Object.keys(HALL_MAP);
@@ -204,8 +206,7 @@ export async function getFoodItems(): Promise<any> {
         },
         {},
       );
-      // console.log(hall.meals);
-      if (Object.keys(hall.meals).length > 0) acc[id] = { ...hall }; // Store ID to access it later for Mapping
+      acc[id] = { ...hall }; // Store ID to access it later for Mapping
       return acc;
     },
     {},
@@ -248,9 +249,14 @@ export default function ModalScreen() {
 
         const cachedData = await AsyncStorage.getItem(cacheKey);
         if (cachedData) {
-          setApiData(JSON.parse(cachedData));
-          setLoading(false);
-          return;
+          const parsed = JSON.parse(cachedData);
+          const cachedHallsCount = parsed?.filtered ? Object.keys(parsed.filtered).length : 0;
+          const expectedHallsCount = Object.keys(DB_HALL_MAPPING).length;
+          if (cachedHallsCount >= expectedHallsCount) {
+            setApiData(parsed);
+            setLoading(false);
+            return;
+          }
         }
 
         const data = await getFoodItems();

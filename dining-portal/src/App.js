@@ -69,7 +69,11 @@ const ManagerDashboard = () => {
           <select onChange={(e) => setSelectedHall(e.target.value)} value={selectedHall} className="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm bg-white border">
             <option value="all">All Locations</option>
             <option value="bolton_dining">Bolton</option>
+            <option value="oglethorpe_dining">Oglethorpe</option>
             <option value="snelling_dining">Snelling</option>
+            <option value="niche_dining">The Niche</option>
+            <option value="village_summit">Village Summit</option>
+            <option value="west_campus_dining">West Campus</option>
           </select>
         </div>
       </div>

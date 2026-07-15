@@ -5,13 +5,15 @@ import { useMeals } from '@/contexts/MealsContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Image } from 'expo-image';
 import React, { useMemo, useState } from 'react';
-import { Dimensions, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import Svg, { Circle, Line, Polyline, Text as SvgText } from 'react-native-svg';
 
 export default function ProgressScreen() {
   const colorScheme = useColorScheme();
   const { getProgressData, getDailyProgress } = useMeals();
   const [timeRange, setTimeRange] = useState<7 | 30>(7);
+  const { width: windowWidth } = useWindowDimensions();
+  const chartWidth = windowWidth - 64; // Subtract 32px padding on each side inside ParallaxScrollView
 
   const colors = Colors[colorScheme ?? 'light'];
 
@@ -96,7 +98,7 @@ export default function ProgressScreen() {
         {progressData.length > 0 ? (
           <View style={styles.chartContainer}>
             <View style={{ width: '100%', alignItems: 'center' }}>
-              <Svg width={Dimensions.get('window').width} height={300}>
+              <Svg width={chartWidth} height={300}>
                 {/* Grid Lines */}
                 {Array.from({ length: 5 }).map((_, i) => {
                   const y = (i / 4) * 250 + 20;
@@ -105,7 +107,7 @@ export default function ProgressScreen() {
                       key={`grid-${i}`}
                       x1="50"
                       y1={y}
-                      x2={Dimensions.get('window').width - 50}
+                      x2={chartWidth - 20}
                       y2={y}
                       stroke={colors.text}
                       strokeWidth="0.5"
@@ -130,7 +132,7 @@ export default function ProgressScreen() {
                 <Line
                   x1="50"
                   y1="270"
-                  x2={Dimensions.get('window').width - 20}
+                  x2={chartWidth - 20}
                   y2="270"
                   stroke={colors.text}
                   strokeWidth="1.5"
@@ -161,7 +163,7 @@ export default function ProgressScreen() {
                     points={progressData
                       .map((item, index) => {
                         const xSpacing =
-                          (Dimensions.get('window').width - 70) / (progressData.length - 1);
+                          (chartWidth - 70) / Math.max(progressData.length - 1, 1);
                         const x = 50 + index * xSpacing;
                         const yPercent = item.value / maxValue;
                         const y = 270 - yPercent * 250;
@@ -179,7 +181,7 @@ export default function ProgressScreen() {
                 {/* Data Points (Dots) */}
                 {progressData.map((item, index) => {
                   const xSpacing =
-                    (Dimensions.get('window').width - 70) / Math.max(progressData.length - 1, 1);
+                    (chartWidth - 70) / Math.max(progressData.length - 1, 1);
                   const x = 50 + index * xSpacing;
                   const yPercent = item.value / maxValue;
                   const y = 270 - yPercent * 250;

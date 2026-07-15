@@ -7,6 +7,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { Fonts } from "@/constants/theme";
 import { useMeals } from "@/contexts/MealsContext";
+import { AdBanner } from "@/components/ad-banner";
 
 // compute totals from shared meals context so view updates live
 export default function TabTwoScreen() {
@@ -85,6 +86,8 @@ export default function TabTwoScreen() {
           <ThemedText style={{ opacity: 0.7 }}>No meals logged.</ThemedText>
         )}
       </ThemedView>
+
+      <AdBanner />
 
       {/* <ThemedView style={styles.itemsContainer}>
         <ThemedText type="subtitle" style={styles.itemsTitle}>
