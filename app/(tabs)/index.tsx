@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React from "react";
+import { useRouter } from "expo-router";
 import {
   Animated,
   Pressable,
@@ -8,12 +9,16 @@ import {
   Text,
   View,
   useColorScheme,
+  Alert,
+  TouchableOpacity,
+  Platform,
 } from "react-native";
 import {
   GestureHandlerRootView,
   Swipeable,
 } from "react-native-gesture-handler";
-import { useRouter } from "expo-router";
+import { signOut } from "firebase/auth";
+import { auth } from "@/constants/firebaseConfig";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
@@ -47,8 +52,8 @@ const MACRO_COLORS = {
 };
 
 export default function HomeScreen() {
-  const { meals, deleteMeal } = useMeals();
   const router = useRouter();
+  const { meals, deleteMeal } = useMeals();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
 
@@ -58,6 +63,38 @@ export default function HomeScreen() {
   const month = today.toLocaleDateString("en-US", { month: "short" });
   const day = today.getDate();
   const todayDateString = `${dayName}, ${month} ${day}`;
+
+  const handleLogout = () => {
+    if (Platform.OS === "web") {
+      const confirmLogout = window.confirm("Are you sure you want to sign out?");
+      if (confirmLogout) {
+        signOut(auth).catch((error) => {
+          console.error("Sign out failed", error);
+          window.alert("Failed to sign out. Please try again.");
+        });
+      }
+    } else {
+      Alert.alert(
+        "Sign Out",
+        "Are you sure you want to sign out?",
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Sign Out",
+            style: "destructive",
+            onPress: async () => {
+              try {
+                await signOut(auth);
+              } catch (error) {
+                console.error("Sign out failed", error);
+                Alert.alert("Error", "Failed to sign out. Please try again.");
+              }
+            },
+          },
+        ]
+      );
+    }
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -80,6 +117,17 @@ export default function HomeScreen() {
               Daily Intake
             </ThemedText>
           </View>
+          <TouchableOpacity
+            onPress={handleLogout}
+            style={{
+              padding: 8,
+              borderRadius: 20,
+              backgroundColor: colorScheme === "dark" ? "#2C2C2E" : "#F2F2F7",
+            }}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="log-out-outline" size={24} color={theme.textSecondary} />
+          </TouchableOpacity>
         </ThemedView>
 
         <ThemedText

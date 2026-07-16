@@ -29,7 +29,7 @@ import { ThemedView } from "@/components/themed-view";
 import { useMeals } from "@/contexts/MealsContext";
 
 // --- FIREBASE IMPORTS ---
-import { db } from "../constants/firebaseConfig.js"; // Ensure this path matches where you saved Step 1
+import { db } from "@/constants/firebaseConfig"; // Ensure this path matches where you saved Step 1
 
 // --- 1. DEFINE COLOR PALETTE ---
 const Colors = {
@@ -275,31 +275,36 @@ export default function ModalScreen() {
   // Helper to get Human Name from ID
   const getHallName = (id: string) => apiData?.filtered?.[id]?.info?.name || id;
 
-  const availableHallIds = apiData?.filtered
-    ? Object.keys(apiData.filtered)
-    : [];
+  const availableHallIds = useMemo(() => {
+    return apiData?.filtered ? Object.keys(apiData.filtered) : [];
+  }, [apiData]);
 
-  const availableMeals =
-    selectedHallId && apiData?.filtered?.[selectedHallId]?.meals
-      ? Object.keys(apiData.filtered[selectedHallId].meals)
-      : [];
+  const availableMeals = useMemo(() => {
+    if (loading || !apiData) return [];
+    if (!selectedHallId) return [];
+    const mealsObj = apiData?.filtered?.[selectedHallId]?.meals;
+    const keys = mealsObj ? Object.keys(mealsObj) : [];
+    return keys.length > 0 ? keys : ["breakfast", "lunch", "dinner"];
+  }, [selectedHallId, apiData, loading]);
 
-  const availableStations =
-    selectedHallId &&
-    selectedMeal &&
-    apiData?.filtered?.[selectedHallId]?.meals?.[selectedMeal]
-      ? Object.keys(apiData.filtered[selectedHallId].meals[selectedMeal])
-      : [];
+  const availableStations = useMemo(() => {
+    if (!selectedHallId || !selectedMeal || !apiData?.filtered?.[selectedHallId]?.meals?.[selectedMeal]) {
+      return [];
+    }
+    return Object.keys(apiData.filtered[selectedHallId].meals[selectedMeal]);
+  }, [selectedHallId, selectedMeal, apiData]);
 
-  const currentStationFoods =
-    selectedHallId &&
-    selectedMeal &&
-    selectedStation &&
-    apiData?.filtered?.[selectedHallId]?.meals?.[selectedMeal]?.[
-      selectedStation
-    ]
-      ? apiData.filtered[selectedHallId].meals[selectedMeal][selectedStation]
-      : [];
+  const currentStationFoods = useMemo(() => {
+    if (
+      !selectedHallId ||
+      !selectedMeal ||
+      !selectedStation ||
+      !apiData?.filtered?.[selectedHallId]?.meals?.[selectedMeal]?.[selectedStation]
+    ) {
+      return [];
+    }
+    return apiData.filtered[selectedHallId].meals[selectedMeal][selectedStation];
+  }, [selectedHallId, selectedMeal, selectedStation, apiData]);
 
   // --- CALCULATE TOTALS ---
   const totals = useMemo(() => {
