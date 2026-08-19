@@ -1,28 +1,36 @@
 import { Image } from "expo-image";
-import { StyleSheet } from "react-native";
+import React, { useMemo, useState } from "react";
+import { Pressable, StyleSheet, Text, View, useColorScheme } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { SimplePieChart } from "@/components/pie-chart";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
-import { Fonts } from "@/constants/theme";
+import { Fonts, Colors as ThemeColors } from "@/constants/theme";
 import { useMeals } from "@/contexts/MealsContext";
 import { AdBanner } from "@/components/ad-banner";
 
-// compute totals from shared meals context so view updates live
 export default function TabTwoScreen() {
-  const { meals } = useMeals();
+  const { meals, todayMeals } = useMeals();
+  const [scope, setScope] = useState<"today" | "all">("today");
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = ThemeColors[colorScheme];
 
-  const totals = meals.reduce(
-    (acc, m) => ({
-      fat: acc.fat + (m.fat ?? 0),
-      protein: acc.protein + (m.protein ?? 0),
-      carbs: acc.carbs + (m.carbs ?? 0),
-    }),
-    { fat: 0, protein: 0, carbs: 0 },
-  );
+  const activeMeals = scope === "today" ? todayMeals : meals;
+
+  const totals = useMemo(() => {
+    return activeMeals.reduce(
+      (acc, m) => ({
+        fat: acc.fat + (m.fat ?? 0),
+        protein: acc.protein + (m.protein ?? 0),
+        carbs: acc.carbs + (m.carbs ?? 0),
+      }),
+      { fat: 0, protein: 0, carbs: 0 }
+    );
+  }, [activeMeals]);
 
   const totalSum = totals.fat + totals.protein + totals.carbs;
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#E8F5E9", dark: "#121212" }}
@@ -45,8 +53,53 @@ export default function TabTwoScreen() {
         </ThemedText>
       </ThemedView>
       <ThemedText style={styles.subtitle}>
-        Total Macronutrients from All Items
+        {scope === "today"
+          ? "Total Macronutrients from Today's Meals"
+          : "Total Macronutrients from All Recorded Meals"}
       </ThemedText>
+
+      {/* Scope Selector: Today vs All-Time */}
+      <View style={styles.scopeContainer}>
+        <Pressable
+          onPress={() => setScope("today")}
+          style={[
+            styles.scopeButton,
+            scope === "today" && [
+              styles.activeScopeButton,
+              { backgroundColor: colors.tint },
+            ],
+          ]}
+        >
+          <Text
+            style={[
+              styles.scopeButtonText,
+              { color: scope === "today" ? "#000" : colors.text },
+            ]}
+          >
+            Today ({todayMeals.length})
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => setScope("all")}
+          style={[
+            styles.scopeButton,
+            scope === "all" && [
+              styles.activeScopeButton,
+              { backgroundColor: colors.tint },
+            ],
+          ]}
+        >
+          <Text
+            style={[
+              styles.scopeButtonText,
+              { color: scope === "all" ? "#000" : colors.text },
+            ]}
+          >
+            All-Time ({meals.length})
+          </Text>
+        </Pressable>
+      </View>
 
       <ThemedView style={styles.macroContainer}>
         <ThemedView style={styles.macroBox}>
@@ -83,29 +136,13 @@ export default function TabTwoScreen() {
             size={250}
           />
         ) : (
-          <ThemedText style={{ opacity: 0.7 }}>No meals logged.</ThemedText>
+          <ThemedText style={{ opacity: 0.7 }}>
+            {scope === "today" ? "No meals logged today." : "No meals logged."}
+          </ThemedText>
         )}
       </ThemedView>
 
       <AdBanner />
-
-      {/* <ThemedView style={styles.itemsContainer}>
-        <ThemedText type="subtitle" style={styles.itemsTitle}>
-          Items Breakdown
-        </ThemedText>
-        {meals.length === 0 ? (
-          <ThemedText style={{ opacity: 0.7 }}>No meals logged.</ThemedText>
-        ) : (
-          meals.map((item) => (
-            <ThemedView key={item.id} style={styles.itemRow}>
-              <ThemedText style={styles.itemName}>{item.title}</ThemedText>
-              <ThemedText style={styles.itemMacros}>
-                F: {item.fat}g | P: {item.protein}g | C: {item.carbs}g
-              </ThemedText>
-            </ThemedView>
-          ))
-        )}
-      </ThemedView> */}
     </ParallaxScrollView>
   );
 }
@@ -186,5 +223,26 @@ const styles = StyleSheet.create({
   itemMacros: {
     fontSize: 12,
     opacity: 0.7,
+  },
+  scopeContainer: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 20,
+  },
+  scopeButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    alignItems: "center",
+  },
+  activeScopeButton: {
+    borderColor: "transparent",
+  },
+  scopeButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
   },
 });

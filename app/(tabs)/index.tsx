@@ -53,7 +53,7 @@ const MACRO_COLORS = {
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { meals, deleteMeal } = useMeals();
+  const { todayMeals, deleteMeal } = useMeals();
   const colorScheme = useColorScheme() ?? "light";
   const theme = Colors[colorScheme];
 
@@ -117,28 +117,52 @@ export default function HomeScreen() {
               Daily Intake
             </ThemedText>
           </View>
-          <TouchableOpacity
-            onPress={handleLogout}
-            style={{
-              padding: 8,
-              borderRadius: 20,
-              backgroundColor: colorScheme === "dark" ? "#2C2C2E" : "#F2F2F7",
-            }}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="log-out-outline" size={24} color={theme.textSecondary} />
-          </TouchableOpacity>
+          <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
+            <TouchableOpacity
+              onPress={() => router.push("/(tabs)/history" as any)}
+              style={{
+                padding: 8,
+                borderRadius: 20,
+                backgroundColor: colorScheme === "dark" ? "#2C2C2E" : "#F2F2F7",
+              }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="calendar-outline" size={22} color={theme.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleLogout}
+              style={{
+                padding: 8,
+                borderRadius: 20,
+                backgroundColor: colorScheme === "dark" ? "#2C2C2E" : "#F2F2F7",
+              }}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="log-out-outline" size={22} color={theme.textSecondary} />
+            </TouchableOpacity>
+          </View>
         </ThemedView>
 
-        <ThemedText
-          style={[styles.sectionTitle, { color: theme.textSecondary }]}
-        >
-          {"Today's Meals"}
-        </ThemedText>
+        <View style={styles.sectionHeaderRow}>
+          <ThemedText
+            style={[styles.sectionTitle, { color: theme.textSecondary }]}
+          >
+            {"Today's Meals"}
+          </ThemedText>
+          <TouchableOpacity
+            onPress={() => router.push("/(tabs)/history" as any)}
+            style={styles.historyLink}
+          >
+            <Ionicons name="time-outline" size={14} color={theme.primary} />
+            <Text style={[styles.historyLinkText, { color: theme.primary }]}>
+              Past Days
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.boxesContainer}>
           <View style={styles.boxesContent}>
-            {meals.map((item) => (
+            {todayMeals.map((item) => (
               <SwipeableMealCard
                 key={item.id}
                 item={item}
@@ -147,7 +171,7 @@ export default function HomeScreen() {
               />
             ))}
 
-            {meals.length === 0 && (
+            {todayMeals.length === 0 && (
               <View style={styles.emptyState}>
                 <Ionicons
                   name="nutrition-outline"
@@ -156,10 +180,24 @@ export default function HomeScreen() {
                   style={{ opacity: 0.5 }}
                 />
                 <ThemedText
-                  style={{ color: theme.textSecondary, marginTop: 10 }}
+                  style={{ color: theme.textSecondary, marginTop: 10, fontSize: 16, fontWeight: "600" }}
                 >
-                  No meals logged.
+                  No meals logged today.
                 </ThemedText>
+                <ThemedText
+                  style={{ color: theme.textSecondary, marginTop: 4, fontSize: 12, opacity: 0.7, textAlign: "center" }}
+                >
+                  Past meals are saved in your History tab.
+                </ThemedText>
+                <TouchableOpacity
+                  onPress={() => router.push("/(tabs)/history" as any)}
+                  style={[styles.historyOutlineBtn, { borderColor: theme.primary }]}
+                >
+                  <Ionicons name="calendar" size={14} color={theme.primary} />
+                  <Text style={[styles.historyOutlineBtnText, { color: theme.primary }]}>
+                    View Meal History
+                  </Text>
+                </TouchableOpacity>
               </View>
             )}
           </View>
@@ -440,5 +478,38 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+    marginTop: 10,
+  },
+  historyLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+  },
+  historyLinkText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  historyOutlineBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  historyOutlineBtnText: {
+    fontSize: 13,
+    fontWeight: "600",
   },
 });

@@ -13,6 +13,10 @@ const MAPPING = {
   'chart.bar.fill': 'stats-chart',
   'chart.line.uptrend.xyaxis': 'trending-up',
   'bubble.left.and.bubble.right.fill': 'chatbubbles',
+  'calendar': 'calendar',
+  'calendar.fill': 'calendar',
+  'clock.arrow.circlepath': 'time-outline',
+  'history': 'time-outline',
 } as const;
 
 export type IconSymbolName = keyof typeof MAPPING;

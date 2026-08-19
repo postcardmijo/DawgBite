@@ -581,43 +581,60 @@ export default function ModalScreen() {
             <ThemedText>Loading...</ThemedText>
           </View>
         ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.pillScroll}
-          >
-            {availableHallIds.map((hallId) => (
-              <Pressable
-                key={hallId}
-                onPress={() => {
-                  setSelectedHallId(hallId);
-                  setSelectedMeal(null);
-                  setSelectedStation(null);
-                  setSelectedFoodIds(new Set());
-                }}
-                style={[
-                  styles.pill,
-                  {
-                    backgroundColor:
-                      selectedHallId === hallId ? theme.primary : theme.pillBg,
-                  },
-                ]}
-              >
-                <ThemedText
+          <View style={styles.hallGrid}>
+            {availableHallIds.map((hallId) => {
+              const isSelected = selectedHallId === hallId;
+              return (
+                <Pressable
+                  key={hallId}
+                  onPress={() => {
+                    setSelectedHallId(hallId);
+                    setSelectedMeal(null);
+                    setSelectedStation(null);
+                    setSelectedFoodIds(new Set());
+                  }}
                   style={[
-                    styles.pillText,
+                    styles.hallCard,
                     {
-                      color:
-                        selectedHallId === hallId ? "#fff" : theme.pillText,
-                      fontWeight: selectedHallId === hallId ? "bold" : "normal",
+                      backgroundColor: isSelected
+                        ? theme.primary
+                        : theme.surfaceHighlight,
+                      borderColor: isSelected ? theme.primary : theme.border,
                     },
                   ]}
                 >
-                  {getHallName(hallId)}
-                </ThemedText>
-              </Pressable>
-            ))}
-          </ScrollView>
+                  <View style={styles.hallCardContent}>
+                    <Ionicons
+                      name="restaurant-outline"
+                      size={18}
+                      color={isSelected ? "#fff" : theme.primary}
+                      style={styles.hallIcon}
+                    />
+                    <ThemedText
+                      style={[
+                        styles.hallCardText,
+                        {
+                          color: isSelected ? "#fff" : theme.text,
+                          fontWeight: isSelected ? "700" : "500",
+                        },
+                      ]}
+                      numberOfLines={2}
+                    >
+                      {getHallName(hallId)}
+                    </ThemedText>
+                  </View>
+                  {isSelected && (
+                    <Ionicons
+                      name="checkmark-circle"
+                      size={16}
+                      color="#fff"
+                      style={styles.hallCheckmark}
+                    />
+                  )}
+                </Pressable>
+              );
+            })}
+          </View>
         )}
 
         {/* MEAL SELECTOR */}
@@ -669,42 +686,73 @@ export default function ModalScreen() {
             <ThemedText type="subtitle" style={styles.sectionLabel}>
               Station
             </ThemedText>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.pillScroll}
-            >
-              {availableStations.map((station) => (
-                <Pressable
-                  key={station}
-                  onPress={() => {
-                    setSelectedStation(station);
-                    setSelectedFoodIds(new Set());
-                  }}
-                  style={[
-                    styles.pill,
-                    {
-                      backgroundColor:
-                        selectedStation === station
-                          ? theme.primary
-                          : theme.pillBg,
-                    },
-                  ]}
-                >
-                  <ThemedText
-                    style={[
-                      styles.pillText,
-                      {
-                        color:
-                          selectedStation === station ? "#fff" : theme.pillText,
-                      },
-                    ]}
-                  >
-                    {station}
-                  </ThemedText>
-                </Pressable>
-              ))}
-            </ScrollView>
+            {availableStations.length === 0 ? (
+              <View
+                style={[
+                  styles.emptyState,
+                  { backgroundColor: theme.surfaceHighlight },
+                ]}
+              >
+                <ThemedText style={{ color: theme.textSecondary }}>
+                  No stations available for this meal.
+                </ThemedText>
+              </View>
+            ) : (
+              <View style={styles.stationGrid}>
+                {availableStations.map((station) => {
+                  const isSelected = selectedStation === station;
+                  return (
+                    <Pressable
+                      key={station}
+                      onPress={() => {
+                        setSelectedStation(station);
+                        setSelectedFoodIds(new Set());
+                      }}
+                      style={[
+                        styles.stationCard,
+                        {
+                          backgroundColor: isSelected
+                            ? theme.primary
+                            : theme.surfaceHighlight,
+                          borderColor: isSelected
+                            ? theme.primary
+                            : theme.border,
+                        },
+                      ]}
+                    >
+                      <View style={styles.stationCardContent}>
+                        <Ionicons
+                          name="fast-food-outline"
+                          size={16}
+                          color={isSelected ? "#fff" : theme.primary}
+                          style={styles.stationIcon}
+                        />
+                        <ThemedText
+                          style={[
+                            styles.stationCardText,
+                            {
+                              color: isSelected ? "#fff" : theme.text,
+                              fontWeight: isSelected ? "700" : "500",
+                            },
+                          ]}
+                          numberOfLines={2}
+                        >
+                          {station}
+                        </ThemedText>
+                      </View>
+                      {isSelected && (
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={16}
+                          color="#fff"
+                          style={styles.stationCheckmark}
+                        />
+                      )}
+                    </Pressable>
+                  );
+                })}
+              </View>
+            )}
           </>
         )}
 
@@ -847,10 +895,83 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    paddingBottom: 160,
   },
   sectionLabel: {
     marginBottom: 10,
     marginTop: 10,
+  },
+  hallGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    rowGap: 10,
+    columnGap: 10,
+    marginBottom: 16,
+  },
+  hallCard: {
+    width: "48%",
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    minHeight: 58,
+  },
+  hallCardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 8,
+  },
+  hallIcon: {
+    marginRight: 2,
+  },
+  hallCardText: {
+    fontSize: 13,
+    flex: 1,
+    lineHeight: 17,
+  },
+  hallCheckmark: {
+    marginLeft: 4,
+  },
+  stationGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    rowGap: 10,
+    columnGap: 10,
+    marginBottom: 16,
+  },
+  stationCard: {
+    width: "48%",
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    minHeight: 52,
+  },
+  stationCardContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    gap: 8,
+  },
+  stationIcon: {
+    marginRight: 2,
+  },
+  stationCardText: {
+    fontSize: 13,
+    flex: 1,
+    lineHeight: 17,
+  },
+  stationCheckmark: {
+    marginLeft: 4,
   },
   listHeader: {
     flexDirection: "row",
