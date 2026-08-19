@@ -82,7 +82,7 @@ The project maps Nutrislice API IDs to user-friendly display names, and then map
 | `dining-hall-3` | Snelling Dining Commons | `snelling_dining` |
 | `dining-hall-4` | The Niche (Health Sciences Campus) | `niche_dining` |
 | `dining-hall-5` | The Village Summit (Joe Frank Harris) | `village_summit` |
-| `dining-hall-6` | West Campus Dining Commons | `west_campus_dining` |
+| `hillside-dining-commons` | Hillside Dining Commons | `hillside_dining` |
 
 #### Meal Types
 The application crawls the following food service periods:

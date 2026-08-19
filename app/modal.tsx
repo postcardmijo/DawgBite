@@ -70,7 +70,7 @@ const DB_HALL_MAPPING: Record<string, string> = {
   "dining-hall-3": "snelling_dining",
   "dining-hall-4": "niche_dining",
   "dining-hall-5": "village_summit",
-  "dining-hall-6": "west_campus_dining",
+  "hillside-dining-commons": "hillside_dining",
 };
 
 // ... [Your existing getFoodItems function remains unchanged] ...
@@ -84,7 +84,7 @@ export async function getFoodItems(): Promise<any> {
     "dining-hall-3": "Snelling Dining Commons",
     "dining-hall-4": "The Niche (Health Sciences Campus)",
     "dining-hall-5": "The Village Summit (Joe Frank Harris)",
-    "dining-hall-6": "West Campus Dining Commons",
+    "hillside-dining-commons": "Hillside Dining Commons",
   };
 
   const DINING_HALLS = Object.keys(HALL_MAP);
@@ -252,7 +252,8 @@ export default function ModalScreen() {
           const parsed = JSON.parse(cachedData);
           const cachedHallsCount = parsed?.filtered ? Object.keys(parsed.filtered).length : 0;
           const expectedHallsCount = Object.keys(DB_HALL_MAPPING).length;
-          if (cachedHallsCount >= expectedHallsCount) {
+          const hasHillside = parsed?.filtered && "hillside-dining-commons" in parsed.filtered;
+          if (cachedHallsCount >= expectedHallsCount && hasHillside) {
             setApiData(parsed);
             setLoading(false);
             return;

@@ -73,7 +73,7 @@ const ManagerDashboard = () => {
             <option value="snelling_dining">Snelling</option>
             <option value="niche_dining">The Niche</option>
             <option value="village_summit">Village Summit</option>
-            <option value="west_campus_dining">West Campus</option>
+            <option value="hillside_dining">Hillside</option>
           </select>
         </div>
       </div>

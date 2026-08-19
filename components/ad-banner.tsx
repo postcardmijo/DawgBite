@@ -11,7 +11,7 @@ let isNativeAdsSupported = false;
 // Check if we are running in Expo Go or standard client
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
-if (!isExpoGo) {
+if (Platform.OS !== 'web' && !isExpoGo) {
   try {
     const GoogleMobileAds = require('react-native-google-mobile-ads');
     BannerAd = GoogleMobileAds.BannerAd;

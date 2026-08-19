@@ -5,7 +5,7 @@ const HALL_MAP = {
   "dining-hall-3": "Snelling Dining Commons",
   "dining-hall-4": "The Niche (Health Sciences Campus)",
   "dining-hall-5": "The Village Summit (Joe Frank Harris)",
-  "dining-hall-6": "West Campus Dining Commons",
+  "hillside-dining-commons": "Hillside Dining Commons",
 };
 
 const DINING_HALLS = Object.keys(HALL_MAP);

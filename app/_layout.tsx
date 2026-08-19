@@ -6,6 +6,7 @@ import {
 } from "@react-navigation/native";
 import { Stack, useRouter, useSegments, useRootNavigationState } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { Platform } from "react-native";
 import "react-native-reanimated";
 
 import { MealsProvider } from "@/contexts/MealsContext";
@@ -68,6 +69,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     const initAds = async () => {
+      if (Platform.OS === "web") return;
       try {
         const Constants = (await import("expo-constants")).default;
         const { ExecutionEnvironment } = await import("expo-constants");
