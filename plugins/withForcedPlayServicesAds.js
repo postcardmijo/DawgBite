@@ -2,16 +2,11 @@ const { withProjectBuildGradle } = require('expo/config-plugins');
 
 const withForcedPlayServicesAds = (config) => {
   return withProjectBuildGradle(config, (modConfig) => {
-    if (modConfig.modResults.contents.includes('com.google.android.gms:play-services-ads:23.6.0')) {
+    if (modConfig.modResults.contents.includes('-Xskip-metadata-version-check')) {
       return modConfig;
     }
-    const forceResolution = `
+    const compilerOpts = `
 allprojects {
-    configurations.all {
-        resolutionStrategy {
-            force 'com.google.android.gms:play-services-ads:23.6.0'
-        }
-    }
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {
             freeCompilerArgs += ["-Xskip-metadata-version-check"]
@@ -19,7 +14,7 @@ allprojects {
     }
 }
 `;
-    modConfig.modResults.contents += forceResolution;
+    modConfig.modResults.contents += compilerOpts;
     return modConfig;
   });
 };
