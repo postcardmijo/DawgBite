@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "dawgbone",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.radiance92.DawgBone"
@@ -67,5 +67,9 @@
         "projectId": "bb507d98-b49b-413c-90ec-261a2cfb015c"
       }
     }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-3940256099942544~3347511713",
+    "ios_app_id": "ca-app-pub-3940256099942544~1458002511"
   }
 }
