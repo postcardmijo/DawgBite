@@ -1,0 +1,22 @@
+﻿# Dependencies
+node_modules
+*/node_modules
+
+# Subprojects
+dining-portal
+
+# Large unused data files
+app_menu_data.json
+
+# Native directories (prebuilt on EAS)
+/android
+/ios
+
+# Build outputs & Expo
+.expo
+dist
+web-build
+*.tsbuildinfo
+
+# Local env
+.env*.local
