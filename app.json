@@ -56,7 +56,14 @@
       ],
       "expo-font",
       "expo-web-browser",
-      "expo-build-properties"
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.3.20"
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
