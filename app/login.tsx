@@ -196,7 +196,7 @@ export default function LoginScreen() {
               style={styles.logo}
             />
             <ThemedText type="title" style={styles.title}>
-              FoodApp
+              DawgBite
             </ThemedText>
             <ThemedText style={[styles.subtitle, { color: colors.textMuted }]}>
               Track your nutrition journey with ease
@@ -365,6 +365,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 100,
+    borderRadius: 22,
     marginBottom: 8,
   },
   title: {

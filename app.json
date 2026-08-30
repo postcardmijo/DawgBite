@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "DawgBone",
-    "slug": "DawgBone",
+    "name": "DawgBite",
+    "slug": "dawgbite",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "dawgbone",
+    "scheme": "dawgbite",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.radiance92.DawgBone"
+      "bundleIdentifier": "com.radiance92.DawgBite"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +21,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.radiance92.DawgBone"
+      "package": "com.radiance92.DawgBite"
     },
     "web": {
       "output": "static",
