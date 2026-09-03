@@ -13,6 +13,7 @@ import { MealsProvider } from "@/contexts/MealsContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { auth } from "@/constants/firebaseConfig";
+import { initializeAds } from "@/components/init-ads";
 
 export const unstable_settings = {
   initialRouteName: "(tabs)",
@@ -68,26 +69,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   useEffect(() => {
-    const initAds = async () => {
-      if (Platform.OS === "web") return;
-      try {
-        const Constants = (await import("expo-constants")).default;
-        const { ExecutionEnvironment } = await import("expo-constants");
-        const isExpoGo =
-          Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
-
-        if (!isExpoGo) {
-          const mobileAds = require("react-native-google-mobile-ads").default;
-          if (mobileAds) {
-            await mobileAds().initialize();
-            console.log("Google Mobile Ads initialized successfully.");
-          }
-        }
-      } catch (error) {
-        console.warn("Failed to initialize Google Mobile Ads:", error);
-      }
-    };
-    initAds();
+    initializeAds();
   }, []);
 
   return (

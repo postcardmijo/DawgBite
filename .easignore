@@ -1,4 +1,4 @@
-﻿# Dependencies
+# Dependencies
 node_modules
 */node_modules
 
@@ -12,11 +12,17 @@ app_menu_data.json
 /android
 /ios
 
+
+
 # Build outputs & Expo
 .expo
 dist
 web-build
 *.tsbuildinfo
 
-# Local env
+# Local env & IDE files
 .env*.local
+.gemini
+.vscode
+.git
+
